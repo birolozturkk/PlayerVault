@@ -1,0 +1,120 @@
+
+vaults:
+  1:
+    name: "Money Vault"
+    allowed-items:
+      materials:
+        - STONE
+      model-data:
+        - 25459
+      nbt:
+        - "allowed-item-1"
+  2:
+    name: "Sword Vault"
+    allowed-items:
+      materials:
+        - DIAMOND_SWORD
+      model-data:
+        - 25459
+      nbt:
+        - "allowed-item-1"
+
+sql:
+  driver: "SQLITE"
+  host: "localhost"
+  database: "database"
+  username: ""
+  password: ""
+  port: 3306
+  useSSL: false
+
+gui:
+  title: "&0%vault_name%"
+  rows: 6
+  paginated-slots:
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    - 7
+    - 8
+    - 9
+    - 10
+    - 11
+    - 12
+    - 13
+    - 14
+    - 15
+    - 16
+    - 17
+    - 18
+    - 19
+    - 20
+    - 21
+    - 22
+    - 23
+    - 24
+    - 25
+    - 26
+    - 27
+    - 28
+    - 29
+    - 30
+    - 31
+    - 32
+    - 33
+    - 34
+    - 35
+  items:
+    background:
+      material : "BLACK_STAINED_GLASS_PANE"
+      display-name : " "
+      amount: 1
+      glowing: false
+      lore:
+        - ""
+      slots:
+        - 36
+        - 37
+        - 38
+        - 39
+        - 40
+        - 41
+        - 42
+        - 43
+        - 44
+    next:
+      material : "ARROW"
+      display-name : "next"
+      amount: 1
+      glowing: false
+      lore:
+        - ""
+      slots:
+        - 49
+    previous:
+      material : "ARROW"
+      display-name : "previous"
+      amount: 1
+      glowing: false
+      lore:
+        - ""
+      slots:
+        - 47
+prefix: "scropy >>"
+messages:
+  invalid-argument: '%prefix% &cInvalid argument'
+  unknown-command: '%prefix% &cUnknown command'
+  not-enough-arguments: '%prefix% &cNot enough arguments'
+  too-many-arguments: '%prefix% &cToo many argument'
+  no-permission: '%prefix% &cNo permission'
+  reloaded-config: '%prefix% &areloaded config file'
+  loaded-nbt: '%prefix% &aloaded nbt of itemstack'
+  not-found-vault: '%prefix% &cNot found vault'
+  opened-vault: '%prefix% &cNot found vault'
+  vault-created: '%prefix% &aVault created'
+  already-vault: '%prefix% &cAlready there is vault'
+  edited-vault: '%prefix% &aVault edited'

@@ -1,0 +1,6 @@
+name: PlayerVault
+version: '${project.version}'
+main: xyz.scropy.playervault.PlayerVaultPlugin
+api-version: '1.16'
+depend:
+  - PlaceholderAPI
