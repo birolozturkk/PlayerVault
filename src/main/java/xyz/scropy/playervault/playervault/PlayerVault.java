@@ -12,14 +12,14 @@ public class PlayerVault {
 
     private final Vault vault;
     private final Map<Integer, List<PlayerVaultItem>> items;
-//1 List
+
     public PlayerVault(Vault vault, Map<Integer, List<PlayerVaultItem>> items) {
         this.vault = vault;
         this.items = items;
     }
 
     public void save() {
-        items.values().forEach(entry -> entry.forEach(playerVaultItem -> PlayerVaultPlugin.getInstance().getDatabaseManager().getPlayerVaultItemRepository().save(playerVaultItem)));
+        items.values().forEach(entry -> entry.forEach(playerVaultItem -> PlayerVaultPlugin.getInstance().getDatabaseManager().getPlayerVaultItemRepository().save(playerVaultItem).join()));
     }
 
     public void setPlayerVaultItems(int page, List<PlayerVaultItem> playerVaultItems) {

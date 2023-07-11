@@ -1,5 +1,6 @@
 package xyz.scropy.playervault.gui;
 
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -22,8 +23,9 @@ public abstract class PaginatedGUI extends GUI {
         List<ItemStack> paginatedItems = getPaginatedItems();
         for (int i = 0; i < paginatedSlots.size(); i++) {
             int index = currentPage * paginatedSlots.size() + i;
-            if(index >= paginatedItems.size()) return;
-            ItemStack itemStack = paginatedItems.get(index);
+            ItemStack itemStack;
+            if(index >= paginatedItems.size()) itemStack = new ItemStack(Material.AIR);
+            else itemStack = paginatedItems.get(index);
             setItem(paginatedSlots.get(i), itemStack);
         }
     }
@@ -36,7 +38,6 @@ public abstract class PaginatedGUI extends GUI {
     }
 
     protected void goPreviousPage() {
-        if (isFirstPage()) return;
         --currentPage;
         inventory.clear();
         addContent();
@@ -44,10 +45,6 @@ public abstract class PaginatedGUI extends GUI {
 
     protected boolean isFirstPage() {
         return currentPage == 0;
-    }
-
-    protected boolean isLastPage() {
-        return currentPage > (getPaginatedItems().size() / paginatedSlots.size()) - 1;
     }
 
     protected abstract List<ItemStack> getPaginatedItems();

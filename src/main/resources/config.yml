@@ -114,7 +114,7 @@ messages:
   reloaded-config: '%prefix% &areloaded config file'
   loaded-nbt: '%prefix% &aloaded nbt of itemstack'
   not-found-vault: '%prefix% &cNot found vault'
-  opened-vault: '%prefix% &cNot found vault'
+  opened-vault: '%prefix% &cOpened vault'
   vault-created: '%prefix% &aVault created'
   already-vault: '%prefix% &cAlready there is vault'
   edited-vault: '%prefix% &aVault edited'

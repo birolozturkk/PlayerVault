@@ -3,6 +3,7 @@ package xyz.scropy.playervault.gui;
 import com.google.common.cache.Cache;
 import lombok.SneakyThrows;
 import mc.obliviate.inventory.Icon;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -24,10 +25,12 @@ import javax.swing.*;
 import java.io.IOException;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class PlayerVaultGUI extends PaginatedGUI {
 
     private final PlayerVault playerVault;
+    private final Map<Integer, Integer> emptySlots = new HashMap<>();
 
     public PlayerVaultGUI(Player player, PlayerVault playerVault) {
         super(player, StringUtils.format(PlayerVaultPlugin.getInstance().getConfig().getString("gui.title"), Placeholder.builder().apply("%vault_name%", playerVault.getVault().getName()).build()),
@@ -48,7 +51,7 @@ public class PlayerVaultGUI extends PaginatedGUI {
         ItemStack next = ItemUtils.makeItem(config.getConfigurationSection("gui.items.next"),
                 Placeholder.builder().build()).build();
         setItems(config.getIntegerList("gui.items.next.slots"), next, clickEvent -> {
-            if(isFull() || hasNextPage()) {
+            if (isFull() || hasNextPage()) {
                 storeItems();
                 goNextPage();
             }
@@ -75,23 +78,35 @@ public class PlayerVaultGUI extends PaginatedGUI {
         }).toList();
     }
 
+
     private void storeItems() {
         List<PlayerVaultItem> playerVaultItems = playerVault.getItems().getOrDefault(currentPage, new ArrayList<>());
         playerVault.getItems().remove(currentPage);
-        playerVaultItems.forEach(playerVaultItem -> PlayerVaultPlugin.getInstance().getDatabaseManager().getPlayerVaultItemRepository().delete(playerVaultItem));
+        playerVaultItems.forEach(playerVaultItem -> PlayerVaultPlugin.getInstance().getDatabaseManager().getPlayerVaultItemRepository().delete(playerVaultItem).join());
         playerVaultItems.clear();
         for (int i = 0; i < PlayerVaultPlugin.getInstance().getConfig().getIntegerList("gui.paginated-slots").size(); i++) {
             int slot = PlayerVaultPlugin.getInstance().getConfig().getIntegerList("gui.paginated-slots").get(i);
             ItemStack itemStack = getInventory().getItem(slot);
-            if (itemStack == null || itemStack.getType().equals(Material.AIR)) continue;
+            if(itemStack == null || itemStack.getType().equals(Material.AIR)) continue;
             PlayerVaultItem playerVaultItem = new PlayerVaultItem(player.getUniqueId(), playerVault.getVault().getId(), currentPage,
                     BukkitSerialization.itemStackToBase64(itemStack));
             playerVaultItems.add(playerVaultItem);
         }
-        if(playerVaultItems.isEmpty()) return;
+        for (int slot : PlayerVaultPlugin.getInstance().getConfig().getIntegerList("gui.paginated-slots")) {
+            ItemStack itemStack = getInventory().getItem(slot);
+            if ((itemStack == null || itemStack.getType().equals(Material.AIR)) && hasNextPage() && playerVault.getItems().get(currentPage + 1).size() > 0) {
+                playerVault.getItems().get(currentPage + 1)
+                                .forEach(playerVaultItem -> {
+                                    playerVaultItem.setPage(currentPage);
+                                    playerVaultItem.setChanged(true);
+                                    PlayerVaultPlugin.getInstance().getDatabaseManager().getPlayerVaultItemRepository().save(playerVaultItem);
+                                });
+                playerVaultItems.add(playerVault.getItems().get(currentPage + 1).remove(0));
+            }
+        }
+        if (playerVaultItems.isEmpty()) return;
         playerVault.setPlayerVaultItems(currentPage, playerVaultItems);
         playerVault.save();
-
     }
 
     @Override

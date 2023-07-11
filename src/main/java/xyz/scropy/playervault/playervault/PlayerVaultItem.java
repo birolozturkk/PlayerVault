@@ -35,4 +35,8 @@ public class PlayerVaultItem extends DatabaseObject {
         this.page = page;
         this.item = item;
     }
+
+    public void setPage(int page) {
+        this.page = page;
+    }
 }
