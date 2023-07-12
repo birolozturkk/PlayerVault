@@ -87,22 +87,22 @@ public class PlayerVaultGUI extends PaginatedGUI {
         for (int i = 0; i < PlayerVaultPlugin.getInstance().getConfig().getIntegerList("gui.paginated-slots").size(); i++) {
             int slot = PlayerVaultPlugin.getInstance().getConfig().getIntegerList("gui.paginated-slots").get(i);
             ItemStack itemStack = getInventory().getItem(slot);
-            if(itemStack == null || itemStack.getType().equals(Material.AIR)) continue;
+            if ((itemStack == null || itemStack.getType().equals(Material.AIR)) && hasNextPage() && playerVault.getItems().get(currentPage + 1).size() > 0) {
+                playerVault.getItems().keySet().stream()
+                        .filter(pageNum -> pageNum > currentPage)
+                        .filter(pageNum -> playerVault.getItems().get(pageNum).size() > 0)
+                        .forEach(pageNum -> {
+                            PlayerVaultItem playerVaultItem = playerVault.getItems().get(pageNum).get(0);
+                            playerVaultItem.setPage(pageNum - 1);
+                            playerVaultItem.setChanged(true);
+                            PlayerVaultPlugin.getInstance().getDatabaseManager().getPlayerVaultItemRepository().save(playerVaultItem).join();
+                            playerVault.getItems().getOrDefault(pageNum - 1, playerVaultItems).add(playerVault.getItems().get(pageNum).remove(0));
+                        });
+            }
+            if (itemStack == null || itemStack.getType().equals(Material.AIR)) continue;
             PlayerVaultItem playerVaultItem = new PlayerVaultItem(player.getUniqueId(), playerVault.getVault().getId(), currentPage,
                     BukkitSerialization.itemStackToBase64(itemStack));
             playerVaultItems.add(playerVaultItem);
-        }
-        for (int slot : PlayerVaultPlugin.getInstance().getConfig().getIntegerList("gui.paginated-slots")) {
-            ItemStack itemStack = getInventory().getItem(slot);
-            if ((itemStack == null || itemStack.getType().equals(Material.AIR)) && hasNextPage() && playerVault.getItems().get(currentPage + 1).size() > 0) {
-                playerVault.getItems().get(currentPage + 1)
-                                .forEach(playerVaultItem -> {
-                                    playerVaultItem.setPage(currentPage);
-                                    playerVaultItem.setChanged(true);
-                                    PlayerVaultPlugin.getInstance().getDatabaseManager().getPlayerVaultItemRepository().save(playerVaultItem);
-                                });
-                playerVaultItems.add(playerVault.getItems().get(currentPage + 1).remove(0));
-            }
         }
         if (playerVaultItems.isEmpty()) return;
         playerVault.setPlayerVaultItems(currentPage, playerVaultItems);
